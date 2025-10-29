@@ -3,11 +3,11 @@ const cors = require('cors');
 const fs = require('fs');
 
 const app = express();
-const PORT = 3001;
 
 app.use(cors({
-  origin: "https://reactiontest32.netlify.app/"
+  origin: "https://reactiontest32.netlify.app"
 }));
+const PORT = 3001;
 app.use(express.json());
 
 const DATA_FILE = 'leaderboard.json';
