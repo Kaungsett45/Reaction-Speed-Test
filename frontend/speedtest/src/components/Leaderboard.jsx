@@ -6,18 +6,22 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 
 export default function Leaderboard() {
   const [players, setPlayers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchLeaderboard();
   }, []);
 
   const fetchLeaderboard = async () => {
+    setLoading(true);
     try {
       const data = await getLeaderboard();
       setPlayers(data || []);
     } catch (error) {
       console.error('Failed to fetch leaderboard:', error);
       setPlayers([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -26,7 +30,12 @@ export default function Leaderboard() {
       <CardContent>
         <h2 className="text-xl font-semibold text-center mb-4">🏁 Leaderboard</h2>
         <div className="space-y-2">
-          {players.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="text-gray-500 mt-2">Loading leaderboard...</p>
+            </div>
+          ) : players.length === 0 ? (
             <p className="text-center text-gray-500">No scores yet.</p>
           ) : (
             players.map((p, i) => (
