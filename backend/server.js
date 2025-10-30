@@ -1,11 +1,8 @@
-import express from "express";
-import cors from "cors";
-import bodyParser from "body-parser";
-import { createClient } from "@supabase/supabase-js";
-import dotenv from "dotenv";
-
-// Load environment variables
-dotenv.config();
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config();
 
 const app = express();
 app.use(cors({
