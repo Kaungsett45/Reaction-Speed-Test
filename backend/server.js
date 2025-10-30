@@ -1,74 +1,44 @@
-const express = require('express');
-const cors = require('cors');
-const fs = require('fs');
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import { createClient } from "@supabase/supabase-js";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
-
 app.use(cors({
-  origin: "https://reactiontest32.netlify.app"
+  origin: "https://reactiontest32.netlify.app",
 }));
-const PORT = 3001;
-app.use(express.json());
+app.use(bodyParser.json());
 
-const DATA_FILE = 'leaderboard.json';
+//  Supabase setup
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// Initialize empty file if it doesn't exist
-if (!fs.existsSync(DATA_FILE)) {
-  fs.writeFileSync(DATA_FILE, '[]');
-}
+//  POST: Add new score
+app.post("/leaderboard", async (req, res) => {
+  const { name, score } = req.body;
+  const { data, error } = await supabase
+    .from("leaderboard")
+    .insert([{ name, score }]);
 
-// Test endpoint
-app.get('/', (req, res) => {
-  res.json({ message: 'Reaction Speed Test API is running!' });
+  if (error) return res.status(400).json({ error: error.message });
+  res.json(data);
 });
 
-// Get leaderboard
-app.get('/api/scores', (req, res) => {
-  try {
-    const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-    const sorted = data.sort((a, b) => a.bestTime - b.bestTime).slice(0, 10);
-    res.json(sorted);
-  } catch (error) {
-    res.json([]);
-  }
+// GET: Fetch leaderboard (top 100)
+app.get("/leaderboard", async (req, res) => {
+  const { data, error } = await supabase
+    .from("leaderboard")
+    .select("*")
+    .order("score", { ascending: true })
+    .limit(100);
+
+  if (error) return res.status(400).json({ error: error.message });
+  res.json(data);
 });
 
-// Post new score
-app.post('/api/scores', (req, res) => {
-  try {
-    const { id, name, time, image } = req.body;
-    
-    if (!id || !time) {
-      return res.status(400).json({ error: 'Missing id or time' });
-    }
-
-    let data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
-    let player = data.find(p => p.id === id);
-
-    if (player) {
-      player.testCount += 1;
-      if (time < player.bestTime) {
-        player.bestTime = time;
-      }
-      if (name) player.name = name;
-      if (image) player.image = image;
-    } else {
-      data.push({
-        id,
-        name: name || 'Guest',
-        image: image || '',
-        bestTime: time,
-        testCount: 1
-      });
-    }
-
-    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
-});
+app.listen(5000, () => console.log("Server running on port 5000"));
