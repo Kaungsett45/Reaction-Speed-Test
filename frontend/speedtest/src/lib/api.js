@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5001";
+const BASE_URL = "https://reaction-speed-test.onrender.com";
 
 export const postScore = async (data) => {
   try {
