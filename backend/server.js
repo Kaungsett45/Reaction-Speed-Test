@@ -27,12 +27,37 @@ app.post("/api/scores", async (req, res) => {
       return res.status(400).json({ error: 'Missing uid or time' });
     }
 
-    const { data, error } = await supabase
+    // Check if player already exists
+    const { data: existingPlayer, error: fetchError } = await supabase
       .from("leaderboard")
-      .insert([{ uid  , name: name || 'Guest', score: time, image}]);
+      .select("*")
+      .eq("uid", uid)
+      .single();
 
-    if (error) return res.status(400).json({ error: error.message });
-    res.json({ success: true });
+    
+
+    if (existingPlayer) {
+      // Player exists, only update if new score is better (lower)
+      if (time < existingPlayer.score) {
+        const { data, error } = await supabase
+          .from("leaderboard")
+          .update({ name: name || existingPlayer.name, score: time, image })
+          .eq("uid", uid);
+
+        if (error) return res.status(400).json({ error: error.message });
+        res.json({ success: true, message: 'New best score updated!' });
+      } else {
+        res.json({ success: true, message: 'Score not improved, no update needed' });
+      }
+    } else {
+      // New player, insert new record
+      const { data, error } = await supabase
+        .from("leaderboard")
+        .insert([{ uid, name: name || 'Guest', score: time, image }]);
+
+      if (error) return res.status(400).json({ error: error.message });
+      res.json({ success: true, message: 'New player added!' });
+    }
   } catch (err) {
     console.error('POST /api/scores error:', err);
     res.status(500).json({ error: 'Internal server error' });
