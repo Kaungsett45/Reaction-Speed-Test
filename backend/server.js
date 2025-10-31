@@ -19,9 +19,9 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // POST: Add new score
 app.post("/api/scores", async (req, res) => {
-  const { id, name, time, image } = req.body;
+  const { id, name, score, image } = req.body;
   
-  if (!id || !time) {
+  if (!id || !score) {
     return res.status(400).json({ error: 'Missing id or time' });
   }
 
