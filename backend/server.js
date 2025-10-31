@@ -19,30 +19,40 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // POST: Add new score
 app.post("/api/scores", async (req, res) => {
-  const { id, name, score, image } = req.body;
-  
-  if (!id || !score) {
-    return res.status(400).json({ error: 'Missing id or time' });
+  try {
+    const { id, name, time, image } = req.body;
+    
+    if (!id || !time) {
+      return res.status(400).json({ error: 'Missing id or time' });
+    }
+
+    const { data, error } = await supabase
+      .from("leaderboard")
+      .insert([{ id, name: name || 'Guest', score: time ,image:image}]);
+
+    if (error) return res.status(400).json({ error: error.message });
+    res.json({ success: true });
+  } catch (err) {
+    console.error('POST /api/scores error:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
-
-  const { data, error } = await supabase
-    .from("leaderboard")
-    .insert([{ id, name: name || 'Guest', score: time, image }]);
-
-  if (error) return res.status(400).json({ error: error.message });
-  res.json({ success: true });
 });
 
 // GET: Fetch leaderboard (top 10)
 app.get("/api/scores", async (req, res) => {
-  const { data, error } = await supabase
-    .from("leaderboard")
-    .select("*")
-    .order("score", { ascending: true })
-    .limit(10);
+  try {
+    const { data, error } = await supabase
+      .from("leaderboard")
+      .select("*")
+      .order("score", { ascending: true })
+      .limit(10);
 
-  if (error) return res.status(400).json({ error: error.message });
-  res.json(data || []);
+    if (error) return res.status(400).json({ error: error.message });
+    res.json(data || []);
+  } catch (err) {
+    console.error('GET /api/scores error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 const PORT = process.env.PORT || 5000;
