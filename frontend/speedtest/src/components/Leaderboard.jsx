@@ -28,7 +28,7 @@ export default function Leaderboard() {
   return (
     <Card className="max-w-lg mx-auto mt-6 p-4 shadow">
       <CardContent>
-        <h2 className="text-xl font-semibold text-center mb-4">🏁 Leaderboard</h2>
+        <h2 className="text-xl font-semibold text-center mb-4"> Leaderboard</h2>
         <div className="space-y-2">
           {loading ? (
             <div className="text-center py-8">
