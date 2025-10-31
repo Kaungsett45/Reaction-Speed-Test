@@ -6,7 +6,8 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors({
-  origin: "https://reactiontest32.netlify.app",
+  origin: ["https://reactiontest32.netlify.app"],
+  credentials: true
 }));
 app.use(express.json());
 
