@@ -27,7 +27,7 @@ app.post("/api/scores", async (req, res) => {
 
   const { data, error } = await supabase
     .from("leaderboard")
-    .insert([{ id, name: name || 'Guest', time, image }]);
+    .insert([{ id, name: name || 'Guest', score: time, image }]);
 
   if (error) return res.status(400).json({ error: error.message });
   res.json({ success: true });
@@ -38,7 +38,7 @@ app.get("/api/scores", async (req, res) => {
   const { data, error } = await supabase
     .from("leaderboard")
     .select("*")
-    .order("time", { ascending: true })
+    .order("score", { ascending: true })
     .limit(10);
 
   if (error) return res.status(400).json({ error: error.message });
