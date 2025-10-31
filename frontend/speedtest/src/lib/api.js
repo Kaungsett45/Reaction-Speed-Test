@@ -1,4 +1,4 @@
-const BASE_URL = "https://reaction-speed-test.onrender.com";
+const BASE_URL = "http://localhost:5001";
 
 export const postScore = async (data) => {
   try {
@@ -11,13 +11,14 @@ export const postScore = async (data) => {
     });
     
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json();
+      console.error('API Error:', errorData);
+      return { success: false, error: errorData.error || 'Server error' };
     }
-    
+      
     return await response.json();
   } catch (error) {
     console.error('Backend not available, score not saved');
-    // Don't throw error, just log it
     return { success: false, error: 'Backend unavailable' };
   }
 };

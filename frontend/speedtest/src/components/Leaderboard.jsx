@@ -51,9 +51,7 @@ export default function Leaderboard() {
                     <p className="font-medium">
                       {i + 1}. {p.name}
                     </p>
-                    {/* <p className="text-xs text-gray-500">
-                      Tests: {p.testCount}
-                    </p> */}
+                   
                   </div>
                 </div>
                 <p className="font-semibold text-blue-600">{p.score} ms</p>

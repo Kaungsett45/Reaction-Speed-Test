@@ -44,7 +44,7 @@ export default function ReactionTest({ onFinish }) {
       setStatus("clicked");
       setMessage(`Your reaction time: ${reaction} ms`);
       
-      const result = await postScore({ id: userId, name: name || "Guest", time: reaction, image });
+      const result = await postScore({ uid: userId, name: name || "Guest", time: reaction, image ,testcount:0 });
       if (result && !result.success) {
         console.log('Score saved locally only - backend unavailable');
       }

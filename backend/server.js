@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors({
-  origin: ["https://reactiontest32.netlify.app"],
+  origin: ["https://reactiontest32.netlify.app" , "http://localhost:5173", "http://localhost:5001"],
   credentials: true
 }));
 app.use(express.json());
@@ -21,15 +21,15 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 // POST: Add new score
 app.post("/api/scores", async (req, res) => {
   try {
-    const { id, name, time, image } = req.body;
+    const { uid, name, time, image } = req.body;
     
-    if (!id || !time) {
-      return res.status(400).json({ error: 'Missing id or time' });
+    if (!uid || !time) {
+      return res.status(400).json({ error: 'Missing uid or time' });
     }
 
     const { data, error } = await supabase
       .from("leaderboard")
-      .insert([{ id, name: name || 'Guest', score: time, image }]);
+      .insert([{ uid  , name: name || 'Guest', score: time, image}]);
 
     if (error) return res.status(400).json({ error: error.message });
     res.json({ success: true });
@@ -46,7 +46,7 @@ app.get("/api/scores", async (req, res) => {
       .from("leaderboard")
       .select("*")
       .order("score", { ascending: true })
-      .limit(10);
+      .limit(100);
 
     if (error) return res.status(400).json({ error: error.message });
     res.json(data || []);
@@ -56,5 +56,5 @@ app.get("/api/scores", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT ;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
