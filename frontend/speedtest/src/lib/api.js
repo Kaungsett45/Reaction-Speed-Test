@@ -2,12 +2,12 @@ const BASE_URL = "https://reaction-speed-test.onrender.com";
 
 export const postScore = async (data) => {
   try {
-    const response = await fetch(`${BASE_URL}/leaderboard`, {
+    const response = await fetch(`${BASE_URL}/api/scores`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name: data.name, score: data.time }),
+      body: JSON.stringify(data),
     });
     
     if (!response.ok) {
@@ -24,7 +24,7 @@ export const postScore = async (data) => {
 
 export const getLeaderboard = async () => {
   try {
-    const response = await fetch(`${BASE_URL}/leaderboard`);
+    const response = await fetch(`${BASE_URL}/api/scores`);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
