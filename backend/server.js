@@ -8,7 +8,7 @@ const app = express();
 app.use(cors({
   origin: "https://reactiontest32.netlify.app",
 }));
-app.use(bodyParser.json());
+app.use(express.json());
 
 //  Supabase setup
 const SUPABASE_URL = process.env.SUPABASE_URL;
@@ -28,7 +28,7 @@ app.post("/api/scores", async (req, res) => {
 
     const { data, error } = await supabase
       .from("leaderboard")
-      .insert([{ id, name: name || 'Guest', score: time ,image:image}]);
+      .insert([{ id, name: name || 'Guest', score: time, image }]);
 
     if (error) return res.status(400).json({ error: error.message });
     res.json({ success: true });
